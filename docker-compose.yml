@@ -1,0 +1,34 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  optic-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CAMERA_SOURCE: demo
+      UI_ORIGINS: http://localhost:4314
+    ports:
+      - "8000:8000"
+
+  optic-platform:
+    build:
+      context: .
+      dockerfile: optic-platform/Dockerfile
+    depends_on:
+      - optic-api
+    environment:
+      HOST: 0.0.0.0
+      PORT: 4314
+      OPTIC_PLATFORM_MODE: proxy
+      OPTIC_API_URL: http://optic-api:8000
+      OPTIC_API_TIMEOUT_MS: 1600
+    ports:
+      - "4314:4314"
