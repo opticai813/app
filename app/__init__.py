@@ -1,0 +1,1 @@
+"""Optic platform application package."""
